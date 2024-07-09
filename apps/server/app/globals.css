@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Degen";
+  src: url(../public/DegenFont.woff2) format("woff2");
+}

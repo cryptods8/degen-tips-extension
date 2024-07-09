@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Degen";
+  src: url(./assets/DegenFont.woff2) format("woff2");
+}
+
+#plasmo-shadow-container {
+  z-index: 1 !important;
+}

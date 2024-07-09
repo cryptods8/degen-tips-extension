@@ -1,0 +1,3 @@
+{
+  "extends": "@degen-tips-extension/typescript-config/base.json"
+}
