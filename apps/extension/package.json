@@ -1,7 +1,7 @@
 {
   "name": "extension",
   "displayName": "$DEGEN Tips extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Validates $DEGEN tips",
   "author": "dusoo.s+ds8@gmail.com",
   "scripts": {
