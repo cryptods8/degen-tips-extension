@@ -194,10 +194,18 @@ interface CastMetadata {
 function extractCastMetadata(anchor: PlasmoCSUIAnchor): CastMetadata | null {
   const { pathname } = window.location
   const isCastContext =
-    /^\/[^\/]+\/[^\/]+/.test(pathname) && !pathname.startsWith("/~/")
+    /^\/[^\/]+\/[^\/]+/.test(pathname) &&
+    !pathname.startsWith("/~/") &&
+    pathname.search("/quotes") === -1
   const elem = anchor.element
   const isCurrent = isCastContext && elem.matches(selectors[0])
-  const textElem = elem
+
+  // clean up the text element
+  const textElem = elem.cloneNode(true) as HTMLElement
+  textElem
+    .querySelectorAll("div.mt-2.inline-flex.flex-col.justify-center.space-y-1")
+    .forEach((a) => a.remove())
+
   const textContent = textElem.textContent
   const regex = /(\d+) \$degen/i
   const match = textContent.match(regex)
@@ -276,6 +284,9 @@ export const render: PlasmoRender<any> = async (
           </div>
         </div>
       )}
+      {/* <div className="bg-red-700 text-white">
+        {castMetadata.isRoot ? "Root" : "Reply"}
+      </div> */}
     </InlineCSUIContainer>
   )
 }
