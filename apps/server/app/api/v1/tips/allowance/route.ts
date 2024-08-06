@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 function getExpirationTimestamp(timeUntilReset: string) {
   // e.g. "16h 56m"
-  const match = /(\d+)h\ ?(\d+)m/.exec(timeUntilReset);
+  const match = /(\d+)h\s?(\d+)m/.exec(timeUntilReset);
   if (!match) {
     return null;
   }
