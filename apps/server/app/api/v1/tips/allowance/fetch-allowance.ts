@@ -33,3 +33,23 @@ export async function fetchAllowanceFromDownshift(
     return null;
   }
 }
+
+export interface AllowanceFromDegenTips {
+  fid: string;
+  tip_allowance?: string;
+  remaining_tip_allowance?: string;
+}
+
+export async function fetchAllowanceFromDegenTips(
+  fid: number
+): Promise<AllowanceFromDegenTips | null> {
+  try {
+    const res: AllowanceFromDegenTips[] = await fetch(
+      `https://api.degen.tips/airdrop2/allowances?fid=${fid}&limit=1`
+    ).then((res) => res.json());
+    return res?.[0] ?? null;
+  } catch (e) {
+    console.error("Error fetching allowance from degentips: ", e);
+    return null;
+  }
+}

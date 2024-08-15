@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchAllowanceFromDownshift } from "./fetch-allowance";
+import {
+  fetchAllowanceFromDegenTips,
+  fetchAllowanceFromDownshift,
+} from "./fetch-allowance";
 
 export const dynamic = "force-dynamic";
+
+function getRegularExpirationTimestamp() {
+  const now = new Date();
+  const expiration = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  // trim to day
+  expiration.setUTCHours(0);
+  expiration.setUTCMinutes(0);
+  expiration.setUTCSeconds(0);
+  expiration.setUTCMilliseconds(0);
+  //
+  return expiration.getTime();
+}
 
 function getExpirationTimestamp(timeUntilReset: string) {
   // e.g. "16h 56m"
@@ -37,14 +52,23 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Missing fid" }, { status: 400 });
     }
 
-    const allo = await fetchAllowanceFromDownshift(fid);
-    const data = allo
-      ? {
-          allowance: allo.allowance,
-          remaining: allo.remainingAllowance,
-          expirationTimestamp: getExpirationTimestamp(allo.timeUntilReset),
-        }
-      : undefined;
+    // const allo = await fetchAllowanceFromDownshift(fid);
+    // const data = allo
+    //   ? {
+    //       allowance: allo.allowance,
+    //       remaining: allo.remainingAllowance,
+    //       expirationTimestamp: getExpirationTimestamp(allo.timeUntilReset),
+    //     }
+    //   : undefined;
+    const allo = await fetchAllowanceFromDegenTips(fid);
+    const data =
+      allo && allo.tip_allowance && allo.remaining_tip_allowance
+        ? {
+            allowance: parseInt(allo.tip_allowance, 10),
+            remaining: parseInt(allo.remaining_tip_allowance, 10),
+            expirationTimestamp: getRegularExpirationTimestamp(),
+          }
+        : undefined;
     return NextResponse.json({ data });
   } catch (e) {
     console.error(e);
