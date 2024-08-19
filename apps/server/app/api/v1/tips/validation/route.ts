@@ -126,9 +126,9 @@ export async function GET(req: NextRequest) {
   const forceRefresh = q.get("forceRefresh") === "true";
   const apiKey = req.headers.get("x-dte-api-key");
 
-  // if (apiKey !== process.env.API_KEY) {
-  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  // }
+  if (apiKey !== process.env.API_KEY) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     if (!castUrl) {
