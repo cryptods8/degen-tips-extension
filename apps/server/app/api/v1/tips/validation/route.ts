@@ -78,6 +78,31 @@ async function fetchTip(hash: string) {
   return tip as TipResponse;
 }
 
+async function fetchTipFromDegenTips(hash: string) {
+  /*
+  {
+    "snapshot_day": "2024-08-19T00:00:00.000Z",
+    "timestamp": "2024-08-19T09:43:26.000Z",
+    "cast_hash": "\\x8807fff56ceb6a285ed5c1e092828dd189361cee",
+    "fid": "11124",
+    "tip_status": "valid",
+    "tip_type": "regular",
+    "tip_amount": "200",
+    "rolling_daily_tip_amount": "400",
+    "tip_allowance": "9462"
+  }
+  */
+
+  const tipResp = await fetch(
+    `https://api.degen.tips/airdrop2/tips?hash=\\${hash.substring(1)}`
+  );
+  const tips = (await tipResp.json()) as {
+    tip_amount: "string";
+    tip_status: "valid" | "invalid";
+  }[];
+  return tips[0];
+}
+
 interface TipValidationResult {
   amount?: number;
 }
@@ -120,16 +145,20 @@ export async function GET(req: NextRequest) {
       );
       return NextResponse.json({ error: "Cast not found" }, { status: 404 });
     }
-    const tip = cast ? await fetchTip(cast.hash) : null;
+    const tip = cast ? await fetchTipFromDegenTips(cast.hash) : null;
+    const tipAmount =
+      tip?.tip_status === "valid" && tip.tip_amount
+        ? parseInt(tip.tip_amount, 10)
+        : undefined;
     await cache.set<CachedTipValidationResult>(
       cacheKey,
       {
-        data: { amount: tip?.tip_amount },
+        data: { amount: tipAmount },
         timestamp: Date.now(),
       },
-      !tip ? 10 * 60 : undefined
+      !tipAmount ? 10 * 60 : undefined
     );
-    return NextResponse.json({ data: { amount: tip?.tip_amount } });
+    return NextResponse.json({ data: { amount: tipAmount } });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: (e as any).message }, { status: 500 });
