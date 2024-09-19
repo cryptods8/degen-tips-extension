@@ -34,7 +34,7 @@ async function resolveTip(hash: string) {
     fetchTip(hash).catch(() => null),
     fetchTipFromDegenTips(hash).catch(() => null),
   ]);
-  return tipFromDegenTips ?? tip != null
+  return tipFromDegenTips ?? tip?.tip_amount != null
     ? { tip_amount: tip?.tip_amount.toString(), tip_status: "valid" }
     : null;
 }
